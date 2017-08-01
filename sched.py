@@ -41,11 +41,13 @@ headers = sauce.find_all('th', {'class' : 'ddheader'})
 
 for header in headers:
     title = header.get_text()
-    next_row = header.parent.parent.findNext('tr')
-    next_td = next_row.find('td', {'class' : 'dddefault'})
+    print(title)
+    next_row = header.findNext('tr')
+    next_td = next_row.findNext('td', {'class' : 'dddefault'})
     border_table = next_td.find_all('table', {'class' : 'bordertable'})
     contents = border_table[1].find_all('td', {'class' : 'dbdefault'})
     createCourse(contents, title)
+
 
 # term = '201709'
 # d = 'dummy'
