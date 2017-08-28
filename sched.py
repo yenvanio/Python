@@ -17,7 +17,7 @@ class Course(object):
         self.end_date = end_date
         self.room = room
 
-def changeFormat(date):
+def changeDateFormat(date):
     # Current Format => Sep 07 2017
     # New Format => 07/09/2017
     date_array = re.split(' ', date)
@@ -36,13 +36,31 @@ def changeFormat(date):
     new_date = day + '/' + month + '/' + year
     return new_date
 
+def changeTimeFormat(time):
+    # Current Format => 1:10 pm
+    # New Format => 13:10
+    newTime = ''
+    time = time.strip()
+    time_array = re.split(' ', time)
+    if time_array[1] == 'pm':
+        times = re.split(':', time_array[0])
+        num = int(times[0])
+        if(num == 12):
+            newTime = time_array[0]
+        else:
+            num = num + 12
+        newTime = str(num) + ':' + times[1]
+    elif time_array[1] == 'am':
+        newTime = time_array[0]
+    return newTime
+
 
 def db_insert(title, start_date, start_time, end_date, end_time, room):
     # When querying SQL DB, only parameters are time and date
     # Checks from nearest hour (round down if before 30, up if after) to the next hour
     #
     #   Course          Start_Date  Start_Time  End_Date    End Time    Room
-    #   SOFE2800        Sep 07 2017 9:40am      Dec 04 2017 11:00am     UB2080
+    #   SOFE2800        Sep 07 2017 9:40AM      Dec 04 2017 11:00AM     UB2080
 
     # Open database connection
     db = MySQLdb.connect("localhost", "root", "testpass", "Room Finder" )
@@ -56,7 +74,7 @@ def db_insert(title, start_date, start_time, end_date, end_time, room):
 
 def createCourse (contents, title):
 
-    # Time Format => "2:10 - 5:00"
+    # Time Format => "2:10 pm - 5:00 pm"
     time = contents[1].get_text()
     times = re.split('-', time)
 
@@ -70,11 +88,16 @@ def createCourse (contents, title):
         date_array = re.split(', | - ', date_range)
 
         start_date = date_array[0] + ' ' + date_array[1]
-        start_date = changeFormat(start_date)
+        start_date = changeDateFormat(start_date)
+
         start_time = times[0]
+        start_time = changeTimeFormat(start_time)
+
         end_date = date_array[2] + ' ' + date_array[3]
-        end_date = changeFormat(end_date)
+        end_date = changeDateFormat(end_date)
+
         end_time = times[1]
+        end_time = changeTimeFormat(end_time)
 
         db_insert(title, start_date, start_time, end_date, end_time, room[0])
 
