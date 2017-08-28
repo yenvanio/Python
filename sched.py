@@ -17,11 +17,31 @@ class Course(object):
         self.end_date = end_date
         self.room = room
 
-def db_insert(title, start_date, end_date, room):
+def changeFormat(date):
+    # Current Format => Sep 07 2017
+    # New Format => 07/09/2017
+    date_array = re.split(' ', date)
+    day = date_array[1]
+    month = date_array[0]
+    year = date_array[2]
+    if month == 'Sep':
+        month = '09'
+    elif month == 'Oct':
+        month = '10'
+    elif month == 'Nov':
+        month = '11'
+    else:
+        month = '12'
+
+    new_date = day + '/' + month + '/' + year
+    return new_date
+
+
+def db_insert(title, start_date, start_time, end_date, end_time, room):
     # When querying SQL DB, only parameters are time and date
     # Checks from nearest hour (round down if before 30, up if after) to the next hour
     #
-    #   Course          Start_Date              End_Date                Room
+    #   Course          Start_Date  Start_Time  End_Date    End Time    Room
     #   SOFE2800        Sep 07 2017 9:40am      Dec 04 2017 11:00am     UB2080
 
     # Open database connection
@@ -30,7 +50,8 @@ def db_insert(title, start_date, end_date, room):
     # prepare a cursor object using cursor() method
     cursor = db.cursor()
 
-    values = "('" + title + "','" + start_date + "','" + end_date + "','" + room + "'),"
+    values = "('" + title + "','" + start_date + "','" + start_time
+    values += "','" + end_date + "','" + end_time + "','" + room + "'),"
     print (values)
 
 def createCourse (contents, title):
@@ -48,10 +69,14 @@ def createCourse (contents, title):
         date_range = contents[4].get_text()
         date_array = re.split(', | - ', date_range)
 
-        start_date = date_array[0] + ' ' + date_array[1] + ' ' + times[0]
-        end_date = date_array[2] + ' ' + date_array[3] + ' ' + times[1]
+        start_date = date_array[0] + ' ' + date_array[1]
+        start_date = changeFormat(start_date)
+        start_time = times[0]
+        end_date = date_array[2] + ' ' + date_array[3]
+        end_date = changeFormat(end_date)
+        end_time = times[1]
 
-        db_insert(title, start_date, end_date, room[0])
+        db_insert(title, start_date, start_time, end_date, end_time, room[0])
 
 url = 'https://ssbp.mycampus.ca/prod_uoit/bwckschd.p_get_crse_unsec?TRM=U&term_in=201709&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_subj=&sel_crse=&sel_title=&sel_schd=&sel_insm=%25&sel_from_cred=&sel_to_cred=&sel_camp=%25&begin_hh=0&begin_mi=0&begin_ap=p&end_hh=0&end_mi=0&end_ap=a'
 
