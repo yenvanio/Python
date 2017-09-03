@@ -11,7 +11,7 @@ class Course(object):
     end_date = ""
     room = ""
 
-    def __init__(title, day, start_date, start_time, end_date, end_time, room):
+    def __init__(title, day, start_date, start_time, end_date, end_time, room, building):
         self.title = title
         self.day = day
         self.start_date = start_date
@@ -19,6 +19,7 @@ class Course(object):
         self.end_date = end_date
         self.end_time = end_time
         self.room = room
+        self.building = building
 
 def changeDateFormat(date):
     # Current Format => Sep 07 2017
@@ -36,7 +37,7 @@ def changeDateFormat(date):
     else:
         month = '12'
 
-    new_date = year + '-' + day + '-' + month
+    new_date = year + '-' + month + '-' + day
     return new_date
 
 def changeTimeFormat(time):
@@ -57,7 +58,7 @@ def changeTimeFormat(time):
         newTime = time_array[0]
     return newTime
 
-def db_insert(title, day, start_date, start_time, end_date, end_time, room):
+def db_insert(title, day, start_date, start_time, end_date, end_time, room, building):
     # When querying SQL DB, only parameters are time and date
     # Checks from nearest hour (round down if before 30, up if after) to the next hour
     #
@@ -71,7 +72,8 @@ def db_insert(title, day, start_date, start_time, end_date, end_time, room):
     cursor = db.cursor()
 
     values = "('" + title + "','" + day + "','" + start_date + "','" + start_time
-    values += "','" + end_date + "','" + end_time + "','" + room + "'),"
+    values += "','" + end_date + "','" + end_time + "','" + room + "','" + building  + "'),"
+    # values = "('" + room + "'),"
     print (values)
 
 def createCourse (contents, title):
@@ -85,7 +87,10 @@ def createCourse (contents, title):
     if len(times) > 1:
         # Location Format => last string (delimited by spaces) is room #
         location = contents[3].get_text()
-        room = re.split(' ', location)[-1:]
+        location_array = re.split(' ', location);
+        room = location_array[len(location_array) -1]
+
+        building = ' '.join(location_array[:-1]);
 
         # Date Range Format => "Sep 07, 2017 - Dec 04, 2017"
         date_range = contents[4].get_text()
@@ -103,7 +108,7 @@ def createCourse (contents, title):
         end_time = times[1]
         end_time = changeTimeFormat(end_time)
 
-        db_insert(title, day, start_date, start_time, end_date, end_time, room[0])
+        db_insert(title, day, start_date, start_time, end_date, end_time, room, building)
 
 url = 'https://ssbp.mycampus.ca/prod_uoit/bwckschd.p_get_crse_unsec?TRM=U&term_in=201709&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_subj=&sel_crse=&sel_title=&sel_schd=&sel_insm=%25&sel_from_cred=&sel_to_cred=&sel_camp=%25&begin_hh=0&begin_mi=0&begin_ap=p&end_hh=0&end_mi=0&end_ap=a'
 
