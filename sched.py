@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup as soup
 import urllib
 import requests
 import re
-import MySQLdb
 import logging
 
 class Course(object):
@@ -58,7 +57,7 @@ def changeTimeFormat(time):
         newTime = time_array[0]
     return newTime
 
-def db_insert(title, day, start_date, start_time, end_date, end_time, room, building):
+def db_insert(title, day, start_date, start_time, end_date, end_time, room, building, lab):
     # When querying SQL DB, only parameters are time and date
     # Checks from nearest hour (round down if before 30, up if after) to the next hour
     #
@@ -72,11 +71,15 @@ def db_insert(title, day, start_date, start_time, end_date, end_time, room, buil
     cursor = db.cursor()
 
     values = "('" + title + "','" + day + "','" + start_date + "','" + start_time
-    values += "','" + end_date + "','" + end_time + "','" + room + "','" + building  + "'),"
+    values += "','" + end_date + "','" + end_time + "','" + room + "','" + building  + "','" + lab + "'),"
     # values = "('" + room + "'),"
     print (values)
 
 def createCourse (contents, title):
+    #Lab =>
+    lab = ''
+    if(contents[5]=='Laboratory'):
+        lab=true
 
     # Time Format => "2:10 pm - 5:00 pm"
     time = contents[1].get_text()
@@ -108,7 +111,7 @@ def createCourse (contents, title):
         end_time = times[1]
         end_time = changeTimeFormat(end_time)
 
-        db_insert(title, day, start_date, start_time, end_date, end_time, room, building)
+        db_insert(title, day, start_date, start_time, end_date, end_time, room, building, lab)
 
 url = 'https://ssbp.mycampus.ca/prod_uoit/bwckschd.p_get_crse_unsec?TRM=U&term_in=201709&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_subj=&sel_crse=&sel_title=&sel_schd=&sel_insm=%25&sel_from_cred=&sel_to_cred=&sel_camp=%25&begin_hh=0&begin_mi=0&begin_ap=p&end_hh=0&end_mi=0&end_ap=a'
 
