@@ -57,7 +57,7 @@ def changeTimeFormat(time):
         newTime = time_array[0]
     return newTime
 
-def db_insert(title, day, start_date, start_time, end_date, end_time, room, building, class_type):
+def db_insert(title, day, start_date, start_time, end_date, end_time, room, building, location, class_type):
     # When querying SQL DB, only parameters are time and date
     # Checks from nearest hour (round down if before 30, up if after) to the next hour
     #
@@ -71,7 +71,7 @@ def db_insert(title, day, start_date, start_time, end_date, end_time, room, buil
     # cursor = db.cursor()
 
     values = "('" + title + "','" + day + "','" + start_date + "','" + start_time
-    values += "','" + end_date + "','" + end_time + "','" + room + "','" + building  + "','" + class_type + "'),"
+    values += "','" + end_date + "','" + end_time + "','" + room + "','" + building  + "','" + location + "','" + class_type + "'),"
     # values = "('" + room + "'),"
     print (values)
 
@@ -93,6 +93,38 @@ def createCourse (contents, title):
 
         building = ' '.join(location_array[:-1]);
 
+        latln = '';
+
+        if(building == 'OPG Engineering Building'):
+            latln = '43.945772, -78.898470'
+        elif(building == 'Energy Research Centre (ERC)'):
+            latln = '43.945668, -78.896271'
+        elif(building == 'Science Building (UA)'):
+            latln = '43.944509, -78.896440'
+        elif(building == 'Business and IT Building (UB)'):
+            latln = '43.945162, -78.896099'
+        elif(building == 'B-Wing'):
+            latln = '43.943585, -78.896979'
+        elif(building == 'University Pavilion'):
+            latln = '43.943187, -78.898667'
+        elif(building == 'SOUTH WING'):
+            latln = '43.942854, -78.896151'
+        elif(building == 'Simcoe Building/J-Wing'):
+            latln = '43.945835, -78.894623;43.945153, -78.894744;43.944914, -78.894626'
+        elif(building == 'UL Building'):
+            latln = '43.946217, -78.897332'
+        elif(building == 'Software and Informatics Resea'):
+            latln = '43.947846, -78.898861'
+        elif(building == 'Bordessa Hall'):
+            latln = '43.898641, -78.862043'
+        elif(building == 'Regent Theatre'):
+            latln = '43.898301, -78.861992'
+        elif(building == 'Education Building'):
+            latln = '43.898021, -78.863524'
+        elif (building == '61 Charles Street Building'):
+            latln = '43.897385, -78.857999'
+
+
         # Date Range Format => "Sep 07, 2017 - Dec 04, 2017"
         date_range = contents[4].get_text()
         date_array = re.split(', | - ', date_range)
@@ -109,7 +141,7 @@ def createCourse (contents, title):
         end_time = times[1]
         end_time = changeTimeFormat(end_time)
 
-        db_insert(title, day, start_date, start_time, end_date, end_time, room, building, class_type)
+        db_insert(title, day, start_date, start_time, end_date, end_time, room, building, latln, class_type)
 
 url = 'https://ssbp.mycampus.ca/prod_uoit/bwckschd.p_get_crse_unsec?TRM=U&term_in=201709&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_subj=&sel_crse=&sel_title=&sel_schd=&sel_insm=%25&sel_from_cred=&sel_to_cred=&sel_camp=%25&begin_hh=0&begin_mi=0&begin_ap=p&end_hh=0&end_mi=0&end_ap=a'
 

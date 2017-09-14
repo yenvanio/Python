@@ -1,0 +1,43 @@
+OPG Engineering Building
+43.945772, -78.898470
+
+Energy Research Centre (ERC)
+43.945668, -78.896271
+
+Business and IT Building (UB)
+43.945162, -78.896099
+
+Science Building (UA)
+43.944509, -78.896440
+
+B-Wing
+43.943585, -78.896979
+
+University Pavilion
+43.943187, -78.898667
+
+SOUTH WING
+43.942854, -78.896151
+
+Simcoe Building/J-Wing
+43.945835, -78.894623
+43.945153, -78.894744
+43.944914, -78.894626
+
+UL Building
+43.946217, -78.897332
+
+Software and Informatics Resea
+43.947846, -78.898861
+
+Bordessa Hall
+43.898641, -78.862043
+
+Regent Theatre
+43.898301, -78.861992
+
+Education Building
+43.898021, -78.863524
+
+61 Charles Street Building
+43.897385, -78.857999
