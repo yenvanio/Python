@@ -33,8 +33,24 @@ def changeDateFormat(date):
         month = '10'
     elif month == 'Nov':
         month = '11'
-    else:
+    elif month == 'Dec':
         month = '12'
+    elif month == 'Jan':
+        month = '01'
+    elif month == 'Feb':
+        month = '02'
+    elif month == 'Mar':
+        month = '03'
+    elif month == 'Apr':
+        month = '04'
+    elif month == 'May':
+        month = '05'
+    elif month == 'Jun':
+        month = '06'
+    elif month == 'Jul':
+        month = '07'
+    else:
+        month = '08'
 
     new_date = year + '-' + month + '-' + day
     return new_date
@@ -143,7 +159,10 @@ def createCourse (contents, title):
 
         db_insert(title, day, start_date, start_time, end_date, end_time, room, building, latln, class_type)
 
-url = 'https://ssbp.mycampus.ca/prod_uoit/bwckschd.p_get_crse_unsec?TRM=U&term_in=201709&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_subj=&sel_crse=&sel_title=&sel_schd=&sel_insm=%25&sel_from_cred=&sel_to_cred=&sel_camp=%25&begin_hh=0&begin_mi=0&begin_ap=p&end_hh=0&end_mi=0&end_ap=a'
+year = '2018'
+# 01 = Winter, 09 = Fall
+term = '01'
+url = 'https://ssbp.mycampus.ca/prod_uoit/bwckschd.p_get_crse_unsec?TRM=U&term_in='+year+term+'&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_subj=&sel_crse=&sel_title=&sel_schd=&sel_insm=%25&sel_from_cred=&sel_to_cred=&sel_camp=%25&begin_hh=0&begin_mi=0&begin_ap=p&end_hh=0&end_mi=0&end_ap=a'
 
 r = urllib.urlopen(url)
 sauce = soup(r, "lxml")
@@ -164,7 +183,8 @@ for header in headers:
     border_tables = next_td.find_all('table', {'class' : 'bordertable'})
 
     # Get the second border table that has all the timing information
-    contents = border_tables[1].find_all('tr')
+    if(len(border_tables)>1):
+        contents = border_tables[1].find_all('tr')
 
     for row in contents:
         #Check if row has dbdefault td's
