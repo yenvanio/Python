@@ -24,8 +24,6 @@ def openLink(ref_url, url):
 
             openLink(ref_url, ref_url + a['href'])
     else:
-        r = urllib.urlopen(ref_url + url)
-        sauce = soup(r,"lxml")
         header = sauce.find('li', {'class' : 'header-title'})
         file_name = header.findNext('h1', {'class' : 'ellipsis'})
 
