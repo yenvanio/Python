@@ -3,8 +3,10 @@ import urllib
 import requests
 import os
 import shutil
+import time
 
 def openLink(ref_url, url):
+    print "Opening Folder at :%s" % ref_url + url
     r = urllib.urlopen(ref_url + url)
     sauce = soup(r,"lxml")
     items = sauce.find_all('li', {'class' : 'ui-li-has-thumb folder-cell'})
@@ -28,6 +30,7 @@ def openLink(ref_url, url):
             else:
                 # If File
                 a = item.findNext('a', href=True)
+                print "Opening File at :%s" % ref_url + a['href']
                 r = urllib.urlopen(ref_url + a['href'])
                 sauce = soup(r,"lxml")
                 header = sauce.find('li', {'class' : 'header-title'})
@@ -35,6 +38,7 @@ def openLink(ref_url, url):
 
                 # Download Content (Assuming this is a file because no listview items)
                 print "Downloading file:%s" % file_name
+                print "Downloading from:%s" % ref_url + a['href']
 
                 # Creating Response Object
                 r = requests.get(ref_url + url, stream = True)
@@ -46,6 +50,7 @@ def openLink(ref_url, url):
                             f.write(chunk)
 
                 print "%s downloaded!\n" % file_name
+                time.sleep(2)
 
 if __name__ == '__main__':
     shutil.rmtree('/Users/shiv/documents/github/Python/File Downloading/Output', ignore_errors=True)
