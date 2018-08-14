@@ -12,7 +12,7 @@ db = MySQLdb.connect(host="localhost",  # your host, usually localhost
                     db="Room Finder")   # name of the data base
 
 # you must create a Cursor object. It will let
-#  you execute all the queries you need
+# you execute all the queries you need
 cur = db.cursor()
 
 class Course(object):
@@ -35,6 +35,7 @@ class Course(object):
         self.room = room
         self.building = building
 
+# Change the date format to DD/MM/YYYY
 def changeDateFormat(date):
     # Current Format => Sep 07 2017
     # New Format => 07/09/2017
@@ -70,6 +71,7 @@ def changeDateFormat(date):
     new_date = year + '-' + month + '-' + day
     return new_date
 
+# Change the time format to 24h
 def changeTimeFormat(time):
     # Current Format => 1:10 pm
     # New Format => 13:10
@@ -97,27 +99,30 @@ def insert_classes(crn, day, start_date, start_time, end_date, end_time, room, f
 
     sql = "INSERT INTO class (fk_course_crn, day, start_date, start_time, end_date, end_time, room, fk_building_id) VALUES "
     sql += "(" + crn + ",'" + day + "','" + start_date + "','" + start_time
-    sql += "','" + end_date + "','" + end_time + "','" + room + "','" + fk_building_id  + "')"
+    sql += "','" + end_date + "','" + end_time + "','" + room + "','" + fk_building_id  + "');"
     print (sql)
 
-    global db, cur 
-    cur.execute(sql)
-    db.commit()
+    # global db, cur 
+    # cur.execute(sql)
+    # db.commit()
 
-def insert_courses (crn, title, subj, code, section, class_type):
+def insert_courses (crn, title, subj, code, section, class_type, isLab):
 
-    sql = "INSERT INTO course (crn, title, subject, code, section, type) VALUES " 
+    sql = "INSERT INTO course (crn, title, subject, code, section, type, isLab) VALUES " 
     sql += "(" +crn + ",'" + title + "','" + subj + "','" + code
-    sql += "'," + section + ",'" + class_type + "')"
+    sql += "'," + section + ",'" + class_type + "', '" + isLab + "');"
     print (sql)
     
-    global db, cur 
-    cur.execute(sql)
-    db.commit()
+    # global db, cur 
+    # cur.execute(sql)
+    # db.commit()
 
 def createCourse (contents, title, crn, code, subj, section):
     # Lab / Lecture / Tutorial
     class_type = contents[5].get_text()
+    isLab = ''
+    if (class_type == 'Laboratory'):
+        isLab = class_type
 
     # Time Format => "2:10 pm - 5:00 pm"
     time = contents[1].get_text()
@@ -134,6 +139,7 @@ def createCourse (contents, title, crn, code, subj, section):
         building = ' '.join(location_array[:-1])
         fk_building_id = ''
 
+        # Assign the FK_BUILDING_ID for the classes
         if(building == 'OPG Engineering Building'):
             fk_building_id = 'OPG'
         elif(building == 'Energy Research Centre (ERC)'):
@@ -141,11 +147,11 @@ def createCourse (contents, title, crn, code, subj, section):
         elif(building == 'Science Building (UA)'):
             fk_building_id = 'UA'
         elif(building == 'Business and IT Building (UB)'):
-            fk_building_id = 'UB'
+           fk_building_id = 'UB'
         elif(building == 'B-Wing'):
             fk_building_id = 'BW'
         elif(building == 'University Pavilion'):
-            fk_building_id = 'UP'
+              fk_building_id = 'UP'
         elif(building == 'SOUTH WING'):
             fk_building_id = 'SW'
         elif(building == 'Simcoe Building/J-Wing'):
@@ -164,10 +170,8 @@ def createCourse (contents, title, crn, code, subj, section):
             fk_building_id = '61 Charles'
         elif (building == 'University Building A1'):
             fk_building_id = 'UA'
-        elif(building == 'Virtual Adobe Connect'):
+        else:
             fk_building_id = 'ONLINE'
-
-
         # Date Range Format => "Sep 07, 2017 - Dec 04, 2017"
         date_range = contents[4].get_text()
         date_array = re.split(', | - ', date_range)
@@ -186,9 +190,9 @@ def createCourse (contents, title, crn, code, subj, section):
 
         global prev_crn
         if (prev_crn != crn):
-            # Passes values to inert into courses table 
-            insert_courses(crn, title, subj, code, section, class_type)
-        
+             # Passes values to inert into courses table 
+            insert_courses(crn, title, subj, code, section, class_type, isLab)
+            
         # Passes values to insert into classes table
         insert_classes(crn, day, start_date, start_time, end_date, end_time, room, fk_building_id)
 
@@ -196,8 +200,8 @@ def createCourse (contents, title, crn, code, subj, section):
 
 year = '2018'
 # 01 = Winter, 09 = Fall, 05 = Spring/Summer
-term = '05'
-url = 'https://ssbp.mycampus.ca/prod_uoit/bwckschd.p_get_crse_unsec?TRM=U&term_in='+year+term+'&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_subj=&sel_crse=&sel_title=&sel_schd=&sel_insm=%25&sel_from_cred=&sel_to_cred=&sel_camp=%25&begin_hh=0&begin_mi=0&begin_ap=p&end_hh=0&end_mi=0&end_ap=a'
+term = '09'
+url = 'https://ssbp.mycampus.ca/prod_uoit/bwckschd.p_get_crse_unsec?term_in='+year+term+'&sel_subj=dummy&sel_subj=&SEL_CRSE=&SEL_TITLE=&BEGIN_HH=0&BEGIN_MI=0&BEGIN_AP=a&SEL_DAY=dummy&SEL_PTRM=dummy&END_HH=0&END_MI=0&END_AP=y&SEL_CAMP=dummy&SEL_SCHD=dummy&SEL_SESS=dummy&SEL_INSTR=dummy&SEL_INSTR=%25&SEL_ATTR=dummy&SEL_ATTR=%25&SEL_LEVL=dummy&SEL_LEVL=%25&SEL_INSM=dummy&sel_dunt_code=&sel_dunt_unit='
 
 r = urllib.urlopen(url)
 sauce = soup(r, "lxml")
@@ -211,17 +215,23 @@ for header in headers:
     title_contents = header.get_text()
     title_contents_array = re.split(' - ', title_contents)
 
+    # To Account for special cases, start from the back
     title = ''
     for x in title_contents_array[:-3]:
+        # Title is everything except the last 3 hyphens 
         title += x
 
+    # CRN is the 3rd last
     crn = title_contents_array[-3]
     
+    # Course Code is the 2nd last
     code = title_contents_array[-2]
-    codes = re.split(' ', code)
 
+    # Split Course Code into SUBJ and CODE
+    codes = re.split(' ', code)
     subj = codes[0]
 
+    # Section # is the last hypen
     section = title_contents_array[-1]
 
     # Get next row with all the contents
