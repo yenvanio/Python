@@ -36,12 +36,17 @@ def openLink(ref_url, url):
                 header = sauce.find('li', {'class' : 'header-title'})
                 file_name = header.findNext('h1', {'class' : 'ellipsis'}).get_text()
 
+                footer = sauce.find('div', {'class' : 'module toolbar footer-toolbar'})
+                download_link = footer.findAll('a')[1]
+                
+                print download_link['href']
+
                 # Download Content (Assuming this is a file because no listview items)
                 print "Downloading file:%s" % file_name
-                print "Downloading from:%s" % ref_url + a['href']
+                print "Downloading from:%s" % ref_url + download_link['href']
 
                 # Creating Response Object
-                r = requests.get(ref_url + url, stream = True)
+                r = requests.get(ref_url + download_link['href'], stream = True)
 
                 # Download Started
                 with open(file_name, 'wb') as f:
