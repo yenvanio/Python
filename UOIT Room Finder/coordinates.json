@@ -1,0 +1,74 @@
+{
+  "buildings": [
+    {
+      "name": "OPG Engineering Building",
+      "location": "43.945772,-78.898470",
+      "building_id": "OPG"
+    },
+    {
+      "name": "Energy Research Centre (ERC)",
+      "location": "43.945668,-78.896271",
+      "building_id": "ERC"
+    },
+    {
+      "name": "Business and IT Building (UB)",
+      "location": "43.945162,-78.896099",
+      "building_id": "UB"
+    },
+    {
+      "name": "Science Building (UA)",
+      "location": "43.944509, -78.896440",
+      "building_id": "UA"
+    },
+    {
+      "name": "B-Wing",
+      "location": "43.943585, -78.896979",
+      "building_id": "BWing"
+    },
+    {
+      "name": "University Pavilion",
+      "location": "43.943187,-78.898667",
+      "building_id": "UP"
+    },
+    {
+      "name": "SOUTH WING",
+      "location": "43.942854,-78.896151",
+      "building_id": "SW"
+    },
+    {
+      "name": "Simcoe Building/J-Wing",
+      "location": "43.945835, -78.894623;43.945153, -78.894744;43.944914, -78.894626",
+      "building_id": "Simcoe"
+    },
+    {
+      "name": "UL Building",
+      "location": "43.946217, -78.897332",
+      "building_id": "UL"
+    },
+    {
+      "name": "Software and Informatics Resea",
+      "location": "43.947846, -78.898861",
+      "building_id": "SIRC"
+    },
+    {
+      "name": "Bordessa Hall",
+      "location": "43.898641, -78.862043",
+      "building_id": "Bordessa"
+    },
+    {
+      "name": "Regent Theatre",
+      "location": "43.898301, -78.861992",
+      "building_id": "Regent"
+    },
+    {
+      "name": "Education Building",
+      "location": "43.898021, -78.863524",
+      "building_id": "Education"
+    },
+    {
+      "name": "61 Charles Street Building",
+      "location": "43.897385, -78.857999",
+      "building_id": "61 Charles"
+    }
+  ]
+}

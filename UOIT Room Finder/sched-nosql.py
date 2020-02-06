@@ -2,18 +2,24 @@ from bs4 import BeautifulSoup as soup
 import urllib
 import requests
 import re
+import decimal
 import logging
-import MySQLdb
+from datetime import datetime
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
+# Firestore Config
+cred = credentials.Certificate("./uoit-room-finder-ashan.json")
+
+# Initialize Firebase
+firebase_admin.initialize_app(cred)
+
+# Get a reference to the database service
+db = firestore.client()
 
 prev_crn = 0
-db = MySQLdb.connect(host="localhost",  # your host, usually localhost
-                    user="root",        # your username
-                    passwd="testpass",  # your password
-                    db="Room Finder")   # name of the data base
-
-# you must create a Cursor object. It will let
-# you execute all the queries you need
-cur = db.cursor()
+epoch = datetime.utcfromtimestamp(0)
 
 class Course(object):
     title = ""
@@ -90,39 +96,65 @@ def changeTimeFormat(time):
         newTime = time_array[0]
     return newTime
 
-def insert_classes(crn, day, start_date, start_time, end_date, end_time, room, fk_building_id):
+def unix_time_seconds(dt):
+    return (dt - epoch).total_seconds()
+
+def float_to_string(number, precision=20):
+    return u'{0:.{prec}f}'.format(
+        decimal.Context(prec=100).create_decimal(str(number)),
+        prec=precision,
+    ).rstrip('0').rstrip('.') or '0'
+
+def getTimestamp(date, time):
+    datetime_str = date + " " + time
+    datetime_object = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M')
+    timestamp = unix_time_seconds(datetime_object)
+    return float_to_string(timestamp)
+
+def insert_classes(crn, day, start_timestamp, end_timestamp, room, location):
     # When querying SQL DB, only parameters are time and date
     # Checks from nearest hour (round down if before 30, up if after) to the next hour
     #
     #   Course          Start_Date  Start_Time  End_Date    End Time    Room
     #   SOFE2800        Sep 07 2017 9:40AM      Dec 04 2017 11:00AM     UB2080
 
-    sql = "INSERT INTO class (fk_course_crn, day, start_date, start_time, end_date, end_time, room, fk_building_id) VALUES "
-    sql += "(" + crn + ",'" + day + "','" + start_date + "','" + start_time
-    sql += "','" + end_date + "','" + end_time + "','" + room + "','" + fk_building_id  + "');"
-    print (sql)
+    map = {
+        u'crn': crn,
+        u'day': day,
+        u'start_timestamp': start_timestamp,
+        u'end_timestamp': end_timestamp,
+        u'room': room,
+        u'location': location
+    };
 
-    # global db, cur 
-    # cur.execute(sql)
-    # db.commit()
+    print(map);
+
+    doc_ref = db.collection(u'classes').document()
+    doc_ref.set(map)
 
 def insert_courses (crn, title, subj, code, section, class_type, isLab):
 
-    sql = "INSERT INTO course (crn, title, subject, code, section, type, isLab) VALUES " 
-    sql += "(" +crn + ",'" + title + "','" + subj + "','" + code
-    sql += "'," + section + ",'" + class_type + "', '" + isLab + "');"
-    print (sql)
-    
-    # global db, cur 
-    # cur.execute(sql)
-    # db.commit()
+    map = {
+        u'crn': crn,
+        u'title': title,
+        u'subject': subj,
+        u'course_code': code,
+        u'section': section,
+        u'class_type': class_type,
+        u'isLab': isLab
+    };
+
+    print(map);
+
+    doc_ref = db.collection(u'courses').document()
+    doc_ref.set(map)
 
 def createCourse (contents, title, crn, code, subj, section):
     # Lab / Lecture / Tutorial
     class_type = contents[5].get_text()
-    isLab = ''
+    isLab = False
     if (class_type == 'Laboratory'):
-        isLab = class_type
+        isLab = True
 
     # Time Format => "2:10 pm - 5:00 pm"
     time = contents[1].get_text()
@@ -138,40 +170,139 @@ def createCourse (contents, title, crn, code, subj, section):
 
         building = ' '.join(location_array[:-1])
         fk_building_id = ''
+        position = []
 
         # Assign the FK_BUILDING_ID for the classes
         if(building == 'OPG Engineering Building'):
-            fk_building_id = 'OPG'
+            fk_building_id = u'OPG'
+            position = [
+                {
+                    u'lat': 43.945772,
+                    u'lng': -78.898470
+                }
+            ]
         elif(building == 'Energy Research Centre (ERC)'):
-            fk_building_id = 'ERC'
+            fk_building_id = u'ERC'
+            position = [
+                {
+                    u'lat': 43.945668,
+                    u'lng': -78.896271
+                }
+            ]
         elif(building == 'Science Building (UA)'):
-            fk_building_id = 'UA'
+            fk_building_id = u'UA'
+            position = [
+                {
+                    u'lat': 43.944509,
+                    u'lng': -78.896440
+                }
+            ]
         elif(building == 'Business and IT Building (UB)'):
-           fk_building_id = 'UB'
+           fk_building_id = u'UB'
+           position = [
+               {
+                   u'lat': 43.945162,
+                   u'lng': -78.896099
+               }
+           ]
         elif(building == 'B-Wing'):
-            fk_building_id = 'BW'
+            fk_building_id = u'BW'
+            position = [
+                {
+                    u'lat': 43.943585,
+                    u'lng': -78.896979
+                }
+            ]
         elif(building == 'University Pavilion'):
-              fk_building_id = 'UP'
+              fk_building_id = u'UP'
+              position = [
+                  {
+                      u'lat': 43.943187,
+                      u'lng': -78.898667
+                  }
+              ]
         elif(building == 'SOUTH WING'):
-            fk_building_id = 'SW'
+            fk_building_id = u'SW'
+            position = [
+                {
+                    u'lat': 43.942854,
+                    u'lng': -78.896151
+                }
+            ]
         elif(building == 'Simcoe Building/J-Wing'):
-            fk_building_id = 'Simcoe'
+            fk_building_id = u'Simcoe'
+            position = [
+                {
+                    u'lat': 43.945835,
+                    u'lng': -78.894623
+                },
+                {
+                    u'lat': 43.945153,
+                    u'lng': -78.894744
+                },
+                {
+                    u'lat': 43.944914,
+                    u'lng': -78.894626
+                }
+            ]
         elif(building == 'UL Building'):
-            fk_building_id = 'UL'
+            fk_building_id = u'UL'
+            position = [
+                {
+                    u'lat': 43.946217,
+                    u'lng': -78.897332
+                }
+            ]
         elif(building == 'Software and Informatics Resea'):
-            fk_building_id = 'SIRC'
+            fk_building_id = u'SIRC'
+            position = [
+                {
+                    u'lat': 43.947846,
+                    u'lng': -78.898861
+                }
+            ]
         elif(building == 'Bordessa Hall'):
-            fk_building_id = 'Bordessa'
+            fk_building_id = u'Bordessa'
+            position = [
+                {
+                    u'lat': 43.898641,
+                    u'lng': -78.862043
+                }
+            ]
         elif(building == 'Regent Theatre'):
-            fk_building_id = 'Regent'
+            fk_building_id = u'Regent'
+            position = [
+                {
+                    u'lat': 43.898301,
+                    u'lng': -78.861992
+                }
+            ]
         elif(building == 'Education Building'):
-            fk_building_id = 'Education'
+            fk_building_id = u'Education'
+            position = [
+                {
+                    u'lat': 43.898021,
+                    u'lng': -78.863524
+                }
+            ]
         elif (building == '61 Charles Street Building'):
-            fk_building_id = '61 Charles'
-        elif (building == 'University Building A1'):
-            fk_building_id = 'UA'
+            fk_building_id = u'61 Charles'
+            position = [
+                {
+                    u'lat': 43.897385,
+                    u'lng': -78.857999
+                }
+            ]
         else:
-            fk_building_id = 'ONLINE'
+            fk_building_id = u'ONLINE'
+            position = []
+
+        location = {
+            u'building': building,
+            u'bid': fk_building_id,
+            u'position': position
+        }
+
         # Date Range Format => "Sep 07, 2017 - Dec 04, 2017"
         date_range = contents[4].get_text()
         date_array = re.split(', | - ', date_range)
@@ -188,19 +319,22 @@ def createCourse (contents, title, crn, code, subj, section):
         end_time = times[1]
         end_time = changeTimeFormat(end_time)
 
+        start_timestamp = getTimestamp(start_date, start_time)
+        end_timestamp = getTimestamp(end_date, end_time)
+
         global prev_crn
         if (prev_crn != crn):
-             # Passes values to inert into courses table 
+             # Passes values to inert into courses table
             insert_courses(crn, title, subj, code, section, class_type, isLab)
-            
+
         # Passes values to insert into classes table
-        insert_classes(crn, day, start_date, start_time, end_date, end_time, room, fk_building_id)
+        insert_classes(crn, day, start_timestamp, end_timestamp, room, location)
 
         prev_crn = crn
 
-year = '2018'
+year = '2020'
 # 01 = Winter, 09 = Fall, 05 = Spring/Summer
-term = '09'
+term = '01'
 url = 'https://ssbp.mycampus.ca/prod_uoit/bwckschd.p_get_crse_unsec?term_in='+year+term+'&sel_subj=dummy&sel_subj=&SEL_CRSE=&SEL_TITLE=&BEGIN_HH=0&BEGIN_MI=0&BEGIN_AP=a&SEL_DAY=dummy&SEL_PTRM=dummy&END_HH=0&END_MI=0&END_AP=y&SEL_CAMP=dummy&SEL_SCHD=dummy&SEL_SESS=dummy&SEL_INSTR=dummy&SEL_INSTR=%25&SEL_ATTR=dummy&SEL_ATTR=%25&SEL_LEVL=dummy&SEL_LEVL=%25&SEL_INSM=dummy&sel_dunt_code=&sel_dunt_unit='
 
 r = urllib.urlopen(url)
@@ -218,12 +352,12 @@ for header in headers:
     # To Account for special cases, start from the back
     title = ''
     for x in title_contents_array[:-3]:
-        # Title is everything except the last 3 hyphens 
+        # Title is everything except the last 3 hyphens
         title += x
 
     # CRN is the 3rd last
     crn = title_contents_array[-3]
-    
+
     # Course Code is the 2nd last
     code = title_contents_array[-2]
 

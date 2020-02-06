@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "uoit-room-finder",
+  "private_key_id": "aaaddca95d49fa799695738bdd90b5d9af63eaad",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDD/aQQ/+A+B5TF\nRerTOQgCq1ewYMV9V/ohcngbBUpQqgXp6W2GsT8r5nH+g9MhyP5mgbKSUZ9sM8x+\nmp+t2xE6SwtHstsErjgYpBn1EiumpN+QvurTMIDPgrxdNjtPqqaXVgJECUdmASX0\nF9KjhorPn5WrLBZGu2BPiC+qosfhZd8HBSgDpF7XrS9Oo0rQQvBjKX9UQv3q5Mz0\nnP5gy63CWdBkMHMLfUOIr6qPA4hCZOOJJHjk9ZUipZ+Ms6FTQ848kpzQ9utnv53x\nwJwAPxN1HKU/t5JtkSN8gM5Wl+p+KBZ9/eq3bXaoX+LDFCOQ1vuTSXJUJ2zvlTEo\ng93LN45XAgMBAAECggEAAKKINW19K1/fHM2veo3jPdr41qXuZ3I+Nn1TI62rNXXi\nvTfxdmLwAPNNdQhPsHrUGouBNnvtzi4Gxtw3KzS1kOCtJ/pnPwcipsj7tCSiBpES\nXLr5mMO99Xrt1q5C/lMsfsebcnjGbFXearS1c0X2AI36sD2Qa7WjFLustKezvQ7g\nq2fmGJ06Qm8S70MwxSX+uqGorZf7IMOWUsGFJoVHfiBoD3WtN9fdValazEOBLdvP\nT1m9oZu8gF5ac9btuvr4gESjt8A3Kz+gHynk4jWQhwYXWm/VIwvA7GcoYbZ9Gd+Z\nnVIC1463gcn82aQdGRn/QqZwbLMXb1a1ZMtysmKvcQKBgQDttaNXTZNNQcF9QHV3\nVWJ6YjJST+1+OFuhax486wYZKLpjvPJp8P97y0MefoDi21cKv7AdTjEvffNjsDnR\n5m1jXACmY2jccKsIVbsU8u8SN83QZ4B0KDns9pV5XWUeO1ELLkJ5MCJW3xLAe2W7\nWvNclvT0xK7b+qAxA22jSshjMQKBgQDTEjvzD9+KVjZBJQ9Hb1e+7NexHRpi8bQd\nA9XuJcnny8lnRI9WAx5sybyLE+I3tyKgCiWjZdld64ibX1URfo/l8l4g4poXz6f5\nWHm2rcB3L0w0y7EPdwhjT+uXc2LGCVHvEfZVeGQB39tgOby1m21A34LTP77TPduj\niEb0ZuRYBwKBgQDSPOLhdRgBrVWfHKKHz7nQegb9q/lluBy6sE3HHSqAl/f5/IP+\nVQrxBz4uuz3s5oeeVxlBYgW4dlIMajFJRt6akSV2A9gbl359Wa2kApSVbUuXteLz\nWRyaSyC6fXLQgS/Vjq12F69XW+Zu3PSF9xPkYRL3ZPkuUATcNKcEVEDVEQKBgBNX\n2nKeA8hzuikiMlJDm/D9V479sctbhzwZe+OFRwmdHWn/WHtzcbhajJLaUaL1f5DX\nHTfqP49h5HUIuY0O4jUajxHIcoK4Hxa0ywK4zaiehwdXm3RlXjlru5V3l5e6hu23\n4bFXhSK+1yXsZKToB40obp7Zeq11P8mu1YHUZBzFAoGAPKLnJQRMitnAaJHDPHzk\n4N4xzCIm9PvwuJdxahSyrdBVkWDIvbUDFFHjq/AnRdiIwXtaBwvEUGwxi9MzFcrp\ny7iVHedGAepqEVygtf1vgOyBxJks7p3kg4DKAQoPenv4fGVThyD1rxT/cYlFY9a6\nuzVXXlZkPEZ5rWCIsXwr8H8=\n-----END PRIVATE KEY-----\n",
+  "client_email": "python-config@uoit-room-finder.iam.gserviceaccount.com",
+  "client_id": "107687317177539938727",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/python-config%40uoit-room-finder.iam.gserviceaccount.com"
+}
